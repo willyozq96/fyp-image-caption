@@ -11,6 +11,7 @@ from tensorflow.keras.layers import add, BatchNormalization, LSTM, Dense, Embedd
 from tensorflow.keras import regularizers, optimizers, initializers
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from flask import Flask, render_template,  url_for, request
+from gtts import gTTS
 
 app = Flask(__name__)
 
@@ -33,7 +34,7 @@ predictionModel = load_model(model_weights_save_path)
 def home():
     return render_template('home.html')
 
-@app.route('/predict',methods=['POST'])
+@app.route('/predict',methods=['POST','GET'])
 def predictCaption():
     count = 0
     url = request.form['imageSource']
@@ -59,8 +60,11 @@ def predictCaption():
     final = final[1:-1]
     final = ' '.join(final)
     predict = re.sub(r'\b(\w+)( \1\b)+', r'\1', final)
-    os.remove(imageName)
+    tts = gTTS(text = predict, lang = 'en', slow = False)
+
+    tts.save(f"temp/audio.mp3")
     
+    os.remove(imageName)
     del img
     del imageName
     del vectorImg
@@ -73,5 +77,8 @@ def predictCaption():
     
     return render_template('./result.html',prediction = predict, urlImg = url)
 
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('page_not_found.html'), 404
 if __name__ == '__main__':
     app.run()
