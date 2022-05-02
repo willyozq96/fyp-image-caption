@@ -29,12 +29,15 @@ inceptionModel = Model(incpmodel.input, incpmodel.layers[-2].output)
 
 model_weights_save_path = 'model.h5'
 predictionModel = load_model(model_weights_save_path)
+def text_to_speech(input):
+    output=gTTS(text=input, lang='en',slow = False)
+    output.save("static/speak.mp3")
 
 @app.route('/')
 def home():
     return render_template('home.html')
 
-@app.route('/predict',methods=['POST','GET'])
+@app.route('/predict',methods=['POST'])
 def predictCaption():
     count = 0
     url = request.form['imageSource']
@@ -60,11 +63,9 @@ def predictCaption():
     final = final[1:-1]
     final = ' '.join(final)
     predict = re.sub(r'\b(\w+)( \1\b)+', r'\1', final)
-    tts = gTTS(text = predict, lang = 'en', slow = False)
-
-    tts.save(f"temp/audio.mp3")
-    
+    text_to_speech(predict)
     os.remove(imageName)
+    
     del img
     del imageName
     del vectorImg
@@ -77,8 +78,5 @@ def predictCaption():
     
     return render_template('./result.html',prediction = predict, urlImg = url)
 
-@app.errorhandler(404)
-def page_not_found(error):
-    return render_template('page_not_found.html'), 404
 if __name__ == '__main__':
     app.run()
