@@ -25,10 +25,17 @@ index_word_Mapping = pickle.load(open('index_word_Mapping.pkl','rb'))
 vocab_size = len(word_index_Mapping) + 1
 
 incpmodel = InceptionV3(weights='imagenet')
-inceptionModel = Model(incpmodel.input, incpmodel.layers[-2].output)
+##incpmodel = InceptionV3(weights='DogCatWeight.h5')
+##incpmodel = InceptionV3(weights='intelweight.h5')
+##incpmodel = InceptionV3(weights='flower_model_weights.h5')
 
+inceptionModel = Model(incpmodel.input, incpmodel.layers[-2].output)
 model_weights_save_path = 'model.h5'
+##model_weights_save_path = 'Dogcat.h5'
+##model_weights_save_path = 'intel.h5'
+##model_weights_save_path = 'modelflower.h5'
 predictionModel = load_model(model_weights_save_path)
+
 def text_to_speech(input):
     output=gTTS(text=input, lang='en',slow = False)
     output.save("static/speak.mp3")
