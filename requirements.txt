@@ -5,4 +5,5 @@ tensorflow-cpu
 Flask
 urllib3
 gunicorn
-gTTS
+gtts
+
